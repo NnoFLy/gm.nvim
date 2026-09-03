@@ -1,0 +1,3 @@
+i /home/nnofly/SYNC/notes/Wor.md:12
+a /home/nnofly/SYNC/notes/todo.org:14,3
+f /home/nnofly/SYNC/notes/Games.org
