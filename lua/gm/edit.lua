@@ -8,6 +8,7 @@ local state = {
     win = nil,
 }
 
+---@return boolean | nil
 local function is_live()
     return state.buf
         and vim.api.nvim_buf_is_valid(state.buf)
@@ -15,6 +16,7 @@ local function is_live()
         and vim.api.nvim_win_is_valid(state.win)
 end
 
+---@return boolean
 local function close_float()
     if not is_live() then
         state.win = nil
@@ -49,6 +51,8 @@ local function close_float()
     return true
 end
 
+---@param bufnr integer
+---@return boolean, string?
 local function validate_and_write(bufnr)
     if not vim.api.nvim_buf_is_valid(bufnr) then
         return false, "Invalid marks buffer"
@@ -75,13 +79,15 @@ local function validate_and_write(bufnr)
     return true
 end
 
+---@param bufnr integer
 local function install_buffer_maps(bufnr)
     vim.keymap.set("n", "q", close_float, { buffer = bufnr, silent = true, desc = "Close gm.txt" })
     vim.keymap.set("n", "<Esc>", close_float, { buffer = bufnr, silent = true, desc = "Close gm.txt" })
-    vim.keymap.set("n", "<C-s>", function()
+    vim.keymap.set({ "n", "i" }, "<C-s>", function()
         vim.api.nvim_buf_call(bufnr, function()
             vim.cmd("write")
         end)
+        close_float()
     end, { buffer = bufnr, silent = true, desc = "Save gm.txt" })
 end
 
