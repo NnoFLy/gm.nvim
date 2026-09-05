@@ -1,0 +1,12 @@
+gm	gm.txt	/*gm*
+gm.nvim	gm.txt	/*gm.nvim*
+gm.nvim-commands	gm.txt	/*gm.nvim-commands*
+gm.nvim-configuration	gm.txt	/*gm.nvim-configuration*
+gm.nvim-contents	gm.txt	/*gm.nvim-contents*
+gm.nvim-float-keymaps	gm.txt	/*gm.nvim-float-keymaps*
+gm.nvim-installation	gm.txt	/*gm.nvim-installation*
+gm.nvim-introduction	gm.txt	/*gm.nvim-introduction*
+gm.nvim-lua-api	gm.txt	/*gm.nvim-lua-api*
+gm.nvim-marks-file	gm.txt	/*gm.nvim-marks-file*
+gm.nvim-terminal-marks	gm.txt	/*gm.nvim-terminal-marks*
+gm.nvim.txt	gm.txt	/*gm.nvim.txt*

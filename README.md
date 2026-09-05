@@ -63,6 +63,21 @@ The editable `gm.txt` format is:
 
 Every non-empty line must contain a valid one-character, non-whitespace key and a non-empty path.
 
+## Float buffer keymaps
+
+When `:GmEditMarks` opens the floating `gm.txt` editor, the following keymaps are available in that buffer:
+
+| Key | Mode | Action |
+| --- | ---- | ------ |
+| `q` | normal | Save and close the float |
+| `<Esc>` | normal | Save and close the float |
+| `<CR>` | normal | Open the mark under the cursor |
+| `<C-s>` | normal, insert | Save `gm.txt` and close the float |
+
+- `q` / `<Esc>` close the float. If there are unsaved changes the plugin prompts to save, discard, or cancel.
+- `<CR>` parses the mark on the current line, closes the float, and opens the marked file at its saved cursor position.
+- `<C-s>` writes the buffer to the marks file and closes the float.
+
 ## Testing
 
 Tests are in `tests/` and use plenary.nvim's Busted runner. See `tests/README.md`.

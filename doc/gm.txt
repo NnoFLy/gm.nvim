@@ -1,0 +1,138 @@
+*gm.nvim.txt*         Project-local marks for Neovim.
+
+*gm* | *gm.nvim*
+
+==============================================================================
+CONTENTS                                                  *gm.nvim-contents*
+
+  1. Introduction ................. |gm.nvim-introduction|
+  2. Installation ................. |gm.nvim-installation|
+  3. Configuration ................ |gm.nvim-configuration|
+  4. Commands ..................... |gm.nvim-commands|
+  5. Lua API ...................... |gm.nvim-lua-api|
+  6. Float buffer keymaps ......... |gm.nvim-float-keymaps|
+  7. Marks file format ............ |gm.nvim-marks-file|
+  8. Terminal marks ............... |gm.nvim-terminal-marks|
+
+==============================================================================
+INTRODUCTION                                               *gm.nvim-introduction*
+
+gm.nvim is a plugin that provides project-local marks for Neovim. Marks are
+stored per project and are persisted between sessions.
+
+==============================================================================
+INSTALLATION                                               *gm.nvim-installation*
+
+With lazy.nvim: >
+    return {
+        "i0i-i0i/gm.nvim",
+        lazy = false,
+    }
+<
+With vim.pack (native): >
+    vim.pack.add({ "https://github.com/i0i-i0i/gm.nvim" })
+<
+
+==============================================================================
+CONFIGURATION                                               *gm.nvim-configuration*
+
+Init the plugin: >
+    require("gm").setup()
+<
+
+Setup accepts an optional table of options: >
+    local gm = require("gm")
+    gm.setup({
+        store_path = vim.fn.stdpath("data") .. "/gm",
+        log_level = "warn",
+        auto_save = true, -- auto-save gm.txt on close
+    })
+<
+
+Options:
+    store_path        Directory where the marks file is stored.
+                      Default: vim.fn.stdpath("data") .. "/gm"
+    log_level         One of "debug", "info", "warn", "error".
+                      Default: "warn"
+    auto_save         If true, save gm.txt automatically on close; otherwise
+                      prompt before closing with unsaved changes.
+                      Default: true
+
+Recommended keymaps: >
+    vim.keymap.set("n", "m", gm.set_mark, { desc = "Gm: Set mark" })
+    vim.keymap.set("n", "'", gm.jump_to_mark, { desc = "Gm: Jump to mark" })
+    vim.keymap.set("n", "<M-e>", gm.edit_marks, { desc = "Gm: Edit marks" })
+<
+
+==============================================================================
+COMMANDS                                                     *gm.nvim-commands*
+
+:GmMark            Prompt for a one-character mark key and save the current
+                   file/cursor.
+:GmJump            Prompt for a mark key and jump to it.
+:GmEditMarks       Open the project gm.txt in a protected floating editor.
+
+==============================================================================
+LUA API                                                      *gm.nvim-lua-api*
+
+The Lua API is exposed on the module returned by require("gm").
+
+set_mark()
+    Prompt for a one-character mark key and save the current file/cursor.
+    Returns boolean success and an optional error string.
+
+jump_to_mark()
+    Prompt for a mark key and jump to it. Returns boolean success and an
+    optional error string.
+
+edit_marks()
+    Open the project gm.txt in the floating editor. Returns boolean success
+    and an optional error string.
+
+==============================================================================
+FLOAT BUFFER KEYMAPS                                      *gm.nvim-float-keymaps*
+
+Inside the floating gm.txt editor opened by |:GmEditMarks|, these buffer-local
+keymaps are available:
+
+    q                      normal  Close the float.
+    <Esc>                  normal  Close the float.
+    <CR>                   normal  Open the mark under the cursor.
+    <C-s>                  normal  Save gm.txt and close the float.
+                           and
+                           insert
+
+Notes:
+    - q and <Esc> close the float. If auto_save is enabled the buffer is
+      validated and saved first; otherwise you are prompted to save, discard,
+      or cancel.
+    - <CR> parses the mark on the current line, closes the float, and opens
+      the marked file at its saved cursor position. Only file marks can be
+      opened this way.
+    - <C-s> writes the buffer to the marks file and closes the float.
+
+==============================================================================
+MARKS FILE FORMAT                                        *gm.nvim-marks-file*
+
+The editable gm.txt file uses the following format for each line: >
+    <key> <path>[:<row>[,<col>]]
+<
+Every non-empty line must contain a valid one-character, non-whitespace key
+and a non-empty path.
+
+Examples: >
+    a src/main.lua:30,12
+    b README.md:1
+    c lua/gm/init.lua
+<
+
+==============================================================================
+TERMINAL MARKS                                            *gm.nvim-terminal-marks*
+
+Terminal marks are session-local: they are not persisted. A terminal mark uses
+the same key namespace as file marks, so setting a terminal mark replaces a
+persisted file mark with that key, and setting a file mark clears the matching
+session-local terminal mark.
+
+==============================================================================
+ vim:tw=78:ts=8:noet:ft=help:norl:
