@@ -2,6 +2,8 @@
 
 Project-local marks for Neovim.
 
+https://github.com/user-attachments/assets/a98b7c58-f930-43d5-8437-89f95f9ba994
+
 ## Installation
 
 <details>
