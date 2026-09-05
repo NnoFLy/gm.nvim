@@ -37,6 +37,7 @@ local gm = require("gm")
 gm.setup({
     store_path = vim.fn.stdpath("data") .. "/gm",
     log_level = "warn",
+    auto_save = true, -- auto-save gm.txt on close
 })
 
 vim.keymap.set("n", "m", gm.set_mark, { desc = "Gm: Set mark" })

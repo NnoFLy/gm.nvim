@@ -88,9 +88,7 @@ function M.decode_with_stats(input)
             nonempty = nonempty + 1
             local key, mark = M.decode_part(line)
             if key and mark then
-                if marks[key] == nil then
-                    parsed = parsed + 1
-                end
+                parsed = parsed + 1
                 marks[key] = mark
             end
         end

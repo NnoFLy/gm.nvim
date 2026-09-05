@@ -16,41 +16,6 @@ local function is_live()
         and vim.api.nvim_win_is_valid(state.win)
 end
 
----@return boolean
-local function close_float()
-    if not is_live() then
-        state.win = nil
-        state.buf = nil
-        return true
-    end
-
-    if vim.bo[state.buf].modified then
-        local choice = vim.fn.confirm(
-            "gm.txt has unsaved changes",
-            "&Save\n&Discard\n&Cancel",
-            1
-        )
-
-        if choice == 1 then
-            vim.api.nvim_buf_call(state.buf, function()
-                vim.cmd("write")
-            end)
-            if vim.bo[state.buf].modified then
-                return false
-            end
-        elseif choice == 2 then
-            vim.bo[state.buf].modified = false
-        else
-            return false
-        end
-    end
-
-    vim.api.nvim_win_close(state.win, true)
-    state.win = nil
-    state.buf = nil
-    return true
-end
-
 ---@param bufnr integer
 ---@return boolean, string?
 local function validate_and_write(bufnr)
@@ -79,10 +44,86 @@ local function validate_and_write(bufnr)
     return true
 end
 
+---@return boolean
+local function close_float()
+    if not is_live() then
+        state.win = nil
+        state.buf = nil
+        return true
+    end
+
+    local opts = require("gm").get_opts()
+    if vim.bo[state.buf].modified then
+        if opts.auto_save then
+            local ok, err = validate_and_write(state.buf)
+            if not ok then
+                vim.notify("gm.txt has invalid content, discarding: " .. tostring(err), vim.log.levels.WARN)
+                vim.bo[state.buf].modified = false
+            end
+        else
+            local choice = vim.fn.confirm(
+                "gm.txt has unsaved changes",
+                "&Save\n&Discard\n&Cancel",
+                1
+            )
+
+            if choice == 1 then
+                vim.api.nvim_buf_call(state.buf, function()
+                    vim.cmd("write")
+                end)
+                if vim.bo[state.buf].modified then
+                    return false
+                end
+            elseif choice == 2 then
+                vim.bo[state.buf].modified = false
+            else
+                return false
+            end
+        end
+    end
+
+    vim.api.nvim_win_close(state.win, true)
+    state.win = nil
+    state.buf = nil
+    return true
+end
+
+local function open_mark_under_cursor()
+    local line = vim.api.nvim_get_current_line()
+    local _, mark = parse.decode_part(line)
+    if not mark or mark.type ~= "file" then
+        return
+    end
+
+    local closed = close_float()
+    if not closed then
+        return
+    end
+
+    local path = store.to_absolute(mark.path)
+    local ok, err = pcall(vim.cmd, "edit " .. vim.fn.fnameescape(path))
+    if not ok then
+        vim.notify("gm: " .. tostring(err), vim.log.levels.ERROR)
+        return
+    end
+
+    if mark.cursor_position then
+        local buf = vim.api.nvim_get_current_buf()
+        local row = mark.cursor_position.row or 1
+        local col = mark.cursor_position.col or 0
+        local line_count = vim.api.nvim_buf_line_count(buf)
+        row = math.max(1, math.min(row, line_count))
+        local text = vim.api.nvim_buf_get_lines(buf, row - 1, row, true)[1] or ""
+        col = math.max(0, math.min(col, #text))
+        pcall(vim.api.nvim_win_set_cursor, 0, { row, col })
+    end
+end
+
 ---@param bufnr integer
 local function install_buffer_maps(bufnr)
     vim.keymap.set("n", "q", close_float, { buffer = bufnr, silent = true, desc = "Close gm.txt" })
     vim.keymap.set("n", "<Esc>", close_float, { buffer = bufnr, silent = true, desc = "Close gm.txt" })
+    vim.keymap.set("n", "<CR>", open_mark_under_cursor, { buffer = bufnr, silent = true, desc = "Open mark under cursor" })
     vim.keymap.set({ "n", "i" }, "<C-s>", function()
         vim.api.nvim_buf_call(bufnr, function()
             vim.cmd("write")
@@ -94,8 +135,8 @@ end
 ---@return boolean, string?
 function M.open()
     if is_live() then
-        vim.api.nvim_set_current_win(state.win)
-        return true, nil
+        local closed = close_float()
+        return closed, nil
     end
 
     local ok, err = store.init()

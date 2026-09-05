@@ -60,4 +60,14 @@ describe("gm.parse", function()
 
         assert.is_true(parsed < nonempty)
     end)
+
+    it("accepts duplicate keys as valid lines", function()
+        local _, parsed, nonempty = parse.decode_with_stats(table.concat({
+            "a /tmp/one:1",
+            "a /tmp/two:2",
+            "f /tmp/three",
+        }, "\n"))
+
+        assert.same(nonempty, parsed)
+    end)
 end)

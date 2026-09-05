@@ -8,10 +8,12 @@ local log = require("gm.log")
 ---@class Gm.Opts
 ---@field store_path string
 ---@field log_level Gm.log_level
+---@field auto_save boolean
 
 local defaults = {
     store_path = vim.fn.stdpath("data") .. "/gm",
     log_level = "warn",
+    auto_save = true,
 }
 
 local opts = vim.deepcopy(defaults)

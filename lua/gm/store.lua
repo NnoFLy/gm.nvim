@@ -169,7 +169,7 @@ function M.get_all()
 
     local marks, parsed_count, nonempty = parse.decode_with_stats(raw)
     if parsed_count ~= nonempty then
-        return {}, "Invalid gm.txt: malformed or duplicate mark entries"
+        return {}, "Invalid gm.txt: malformed mark entries"
     end
 
     for key, mark in pairs(marks) do
