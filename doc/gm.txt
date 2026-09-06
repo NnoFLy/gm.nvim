@@ -12,7 +12,6 @@ CONTENTS                                                  *gm.nvim-contents*
   5. Lua API ...................... |gm.nvim-lua-api|
   6. Float buffer keymaps ......... |gm.nvim-float-keymaps|
   7. Marks file format ............ |gm.nvim-marks-file|
-  8. Terminal marks ............... |gm.nvim-terminal-marks|
 
 ==============================================================================
 INTRODUCTION                                               *gm.nvim-introduction*
@@ -125,14 +124,5 @@ Examples: >
     b README.md:1
     c lua/gm/init.lua
 <
-
-==============================================================================
-TERMINAL MARKS                                            *gm.nvim-terminal-marks*
-
-Terminal marks are session-local: they are not persisted. A terminal mark uses
-the same key namespace as file marks, so setting a terminal mark replaces a
-persisted file mark with that key, and setting a file mark clears the matching
-session-local terminal mark.
-
 ==============================================================================
  vim:tw=78:ts=8:noet:ft=help:norl:

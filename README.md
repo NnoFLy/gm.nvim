@@ -55,8 +55,6 @@ vim.keymap.set("n", "<M-e>", gm.edit_marks, { desc = "Gm: Edit marks" })
 
 The Lua API remains available as `require("gm").set_mark()`, `jump_to_mark()` and `edit_marks()`.
 
-Terminal marks are session-local. A terminal mark uses the same key namespace as file marks, so setting a terminal mark replaces a persisted file mark with that key; setting a file mark clears the session-local terminal mark.
-
 The editable `gm.txt` format is:
 
 ```text
