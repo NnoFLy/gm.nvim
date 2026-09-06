@@ -25,12 +25,12 @@ INSTALLATION                                               *gm.nvim-installation
 
 With lazy.nvim: >
     return {
-        "i0i-i0i/gm.nvim",
+        "NnoFLy/gm.nvim",
         lazy = false,
     }
 <
 With vim.pack (native): >
-    vim.pack.add({ "https://github.com/i0i-i0i/gm.nvim" })
+    vim.pack.add({ "https://github.com/NnoFLy/gm.nvim" })
 <
 
 ==============================================================================

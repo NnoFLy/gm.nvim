@@ -11,7 +11,7 @@ https://github.com/user-attachments/assets/a98b7c58-f930-43d5-8437-89f95f9ba994
 
 ```lua
 return {
-    "i0i-i0i/gm.nvim",
+    "NnoFLy/gm.nvim",
     lazy = false,
 ```
 
@@ -21,7 +21,7 @@ return {
 <summary>Native (with vim.pack)</summary>
 
 ```lua
-vim.pack.add({ "https://github.com/i0i-i0i/gm.nvim" })
+vim.pack.add({ "https://github.com/NnoFLy/gm.nvim" })
 ```
 
 </details>
