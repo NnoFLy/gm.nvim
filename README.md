@@ -1,6 +1,6 @@
 # gm.nvim
 
-Project-local marks for Neovim.
+Project-local marks for Neovim. Inspired by [Spearmint.nvim](https://github.com/adithyasource/spearmint.nvim).
 
 https://github.com/user-attachments/assets/a98b7c58-f930-43d5-8437-89f95f9ba994
 
