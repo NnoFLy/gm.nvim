@@ -109,6 +109,9 @@ Notes:
       the marked file at its saved cursor position. Only file marks can be
       opened this way.
     - <C-s> writes the buffer to the marks file and closes the float.
+    - Validation or write failures keep the float open with edits intact.
+    - Saving and opening relative paths use the project captured when the
+      editor opened, even after changing directories.
 
 ==============================================================================
 MARKS FILE FORMAT                                        *gm.nvim-marks-file*

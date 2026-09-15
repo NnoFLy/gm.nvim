@@ -74,7 +74,7 @@ When `:GmEditMarks` opens the floating `gm.txt` editor, the following keymaps ar
 | `<CR>` | normal | Open the mark under the cursor |
 | `<C-s>` | normal, insert | Save `gm.txt` and close the float |
 
-- `q` / `<Esc>` close the float. If there are unsaved changes the plugin prompts to save, discard, or cancel.
+- `q` / `<Esc>` save and close the float by default. With `auto_save = false`, unsaved changes prompt to save, discard, or cancel.
 - `<CR>` parses the mark on the current line, closes the float, and opens the marked file at its saved cursor position.
 - `<C-s>` writes the buffer to the marks file and closes the float.
 
