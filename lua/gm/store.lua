@@ -26,8 +26,8 @@ local function marks_file_path()
     return vim.fs.joinpath(project_dir(), consts.marks_file)
 end
 
-local function ensure_dir()
-    local dir = vim.fs.normalize(vim.fn.fnamemodify(project_dir(), ":p"))
+local function ensure_dir(path)
+    local dir = vim.fs.normalize(vim.fn.fnamemodify(path or project_dir(), ":p"))
     local ok, err = pcall(vim.fn.mkdir, dir, "p")
     if not ok then
         return false, "Cannot create storage directory: " .. tostring(err)
@@ -67,13 +67,13 @@ local function read_raw()
     return data or "", nil
 end
 
-local function atomic_write(data)
-    local ok, err = ensure_dir()
+local function atomic_write(data, target)
+    target = target or marks_file_path()
+    local ok, err = ensure_dir(vim.fs.dirname(target))
     if not ok then
         return false, err
     end
 
-    local target = marks_file_path()
     -- The temporary file must live on the same filesystem as the target.
     -- `vim.fn.tempname()` may point at /tmp, which makes os.rename() fail
     -- with EXDEV when the store lives on another filesystem.
@@ -113,11 +113,11 @@ local function project_relative(path)
     return relative or absolute
 end
 
-local function absolute_from_mark(path)
+local function absolute_from_mark(path, root)
     if vim.fn.isabsolutepath(path) == 1 then
         return vim.fs.normalize(path)
     end
-    return vim.fs.normalize(vim.fs.joinpath(project_root(), path))
+    return vim.fs.normalize(vim.fs.joinpath(root or project_root(), path))
 end
 
 ---@return string
@@ -146,18 +146,14 @@ function M.init()
 end
 
 ---@param data string
+---@param target string? Captured absolute marks-file path for an open editor.
 ---@return boolean, string?
-function M.write_raw(data)
+function M.write_raw(data, target)
     if type(data) ~= "string" then
         return false, "Marks file content must be a string"
     end
 
-    local ok, err = ensure_dir()
-    if not ok then
-        return false, err
-    end
-
-    return atomic_write(data)
+    return atomic_write(data, target)
 end
 
 ---@return table<string, Gm.Mark>, string?
@@ -242,9 +238,10 @@ function M.to_relative(path)
 end
 
 ---@param path string
+---@param root string? Project root captured when opening the marks editor.
 ---@return string
-function M.to_absolute(path)
-    return absolute_from_mark(path)
+function M.to_absolute(path, root)
+    return absolute_from_mark(path, root)
 end
 
 ---@param path string

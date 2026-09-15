@@ -6,6 +6,8 @@ local parse = require("gm.parse")
 local state = {
     buf = nil,
     win = nil,
+    file = nil,
+    project = nil,
 }
 
 ---@return boolean | nil
@@ -35,7 +37,7 @@ local function validate_and_write(bufnr)
         return false, "invalid gm.txt; every non-empty line must be '<key> <path>[:row[,col]]'"
     end
 
-    local ok, err = store.write_raw(raw)
+    local ok, err = store.write_raw(raw, state.file)
     if not ok then
         return false, err
     end
@@ -57,8 +59,8 @@ local function close_float()
         if opts.auto_save then
             local ok, err = validate_and_write(state.buf)
             if not ok then
-                vim.notify("gm.txt has invalid content, discarding: " .. tostring(err), vim.log.levels.WARN)
-                vim.bo[state.buf].modified = false
+                vim.notify("gm: cannot save marks file: " .. tostring(err), vim.log.levels.ERROR)
+                return false
             end
         else
             local choice = vim.fn.confirm(
@@ -95,12 +97,11 @@ local function open_mark_under_cursor()
         return
     end
 
+    local path = store.to_absolute(mark.path, state.project)
     local closed = close_float()
     if not closed then
         return
     end
-
-    local path = store.to_absolute(mark.path)
     local ok, err = pcall(vim.cmd, "edit " .. vim.fn.fnameescape(path))
     if not ok then
         vim.notify("gm: " .. tostring(err), vim.log.levels.ERROR)
@@ -128,7 +129,9 @@ local function install_buffer_maps(bufnr)
         vim.api.nvim_buf_call(bufnr, function()
             vim.cmd("write")
         end)
-        close_float()
+        if not vim.bo[bufnr].modified then
+            close_float()
+        end
     end, { buffer = bufnr, silent = true, desc = "Save gm.txt" })
 end
 
@@ -144,7 +147,8 @@ function M.open()
         return false, err
     end
 
-    local file = store.marks_file_path()
+    local project = store.current_project_path()
+    local file = vim.fn.fnamemodify(store.marks_file_path(), ":p")
     local bufnr = vim.fn.bufadd(file)
     vim.fn.bufload(bufnr)
     vim.bo[bufnr].bufhidden = "wipe"
@@ -176,6 +180,8 @@ function M.open()
 
     state.buf = bufnr
     state.win = win
+    state.file = file
+    state.project = project
     install_buffer_maps(bufnr)
 
     vim.api.nvim_create_autocmd("BufWriteCmd", {

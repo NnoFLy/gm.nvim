@@ -12,7 +12,7 @@ end, { desc = "Set a gm.nvim mark" })
 vim.api.nvim_create_user_command("GmJump", function()
     local gm = require("gm")
     gm.setup()
-    gm.jump()
+    gm.jump_to_mark()
 end, { desc = "Jump to a gm.nvim mark" })
 
 vim.api.nvim_create_user_command("GmEditMarks", function()
