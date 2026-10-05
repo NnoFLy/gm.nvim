@@ -94,9 +94,10 @@ function M.set_mark()
         return false, err
     end
 
-    forget_terminal(key)
     local ok, save_err = store.save(mark)
-    if not ok then
+    if ok then
+        forget_terminal(key)
+    else
         notify_error(save_err)
     end
     return ok, save_err

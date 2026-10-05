@@ -29,8 +29,7 @@ function M.decode_part(input)
         return nil, nil
     end
 
-    rest = vim.trim(rest)
-    if rest == "" then
+    if rest == "" or vim.trim(rest) == "" then
         return nil, nil
     end
 

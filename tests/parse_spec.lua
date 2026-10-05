@@ -61,6 +61,13 @@ describe("gm.parse", function()
         assert.is_true(parsed < nonempty)
     end)
 
+    it("preserves trailing whitespace in paths", function()
+        local key, mark = parse.decode_part("a path with trailing space ")
+
+        assert.same("a", key)
+        assert.same("path with trailing space ", mark.path)
+    end)
+
     it("accepts duplicate keys as valid lines", function()
         local _, parsed, nonempty = parse.decode_with_stats(table.concat({
             "a /tmp/one:1",
